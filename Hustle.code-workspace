@@ -1,0 +1,17 @@
+{
+  "folders": [{ "name": "Hustle", "path": "." }],
+  "settings": {
+    "python.defaultInterpreterPath": "${workspaceFolder}/analytics/.venv/bin/python",
+    "editor.formatOnSave": true,
+    "files.exclude": { "**/bin": true, "**/obj": true, "**/__pycache__": true }
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-dotnettools.csdevkit",
+      "ms-python.python",
+      "ms-azuretools.vscode-docker",
+      "mtxr.sqltools",
+      "mtxr.sqltools-driver-pg"
+    ]
+  }
+}
