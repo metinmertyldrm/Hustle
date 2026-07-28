@@ -1,0 +1,2 @@
+import 'package:flutter_test/flutter_test.dart';import 'package:shared_preferences/shared_preferences.dart';import 'package:hustle_mobile/features/watchlist/watchlist.dart';
+void main(){test('sembol ekler, tekrarı önler ve siler',()async{SharedPreferences.setMockInitialValues({});final list=WatchlistNotifier();expect(await list.add(' btc-usdt '),isTrue);expect(list.state,['BTCUSDT']);expect(await list.add('BTCUSDT'),isFalse);await list.remove('BTCUSDT');expect(list.state,isEmpty);});}

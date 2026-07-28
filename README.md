@@ -21,6 +21,8 @@ code Hustle.code-workspace
 
 ## Gereksinimler
 
+Mobil uygulama için [Flutter stable](https://docs.flutter.dev/get-started/install) (Dart dahil), Android Studio/Android SDK ve iOS geliştirme için macOS üzerinde Xcode/CocoaPods kurun. `flutter doctor` ile kurulumu doğrulayın.
+
 Projeyi en kısa yoldan çalıştırmak için şunlar yeterlidir:
 
 - Docker Desktop veya Docker Engine ile Docker Compose v2
@@ -49,23 +51,9 @@ docker compose ps
 Tüm servislerin `running`/`healthy` görünmesinden sonra tarayıcıdan şu adresleri
 açabilirsiniz:
 
-- Hustle mobil uygulaması: http://localhost:3000
 - .NET Swagger: http://localhost:8080/swagger
 - Python analiz Swagger: http://localhost:8000/docs
 - Python servis bilgisi: http://localhost:8000/
-
-### Telefonda uygulama olarak kullanma
-
-Hustle arayüzü bir Progressive Web App (PWA) olarak hazırlanmıştır. Bilgisayar
-ve telefon aynı Wi-Fi ağındayken bilgisayarınızın yerel IP adresini öğrenin ve
-telefondan `http://BILGISAYAR-IP:3000` adresini açın. Ardından Android/Chrome'da
-**Uygulamayı yükle**, iPhone/Safari'de **Paylaş → Ana Ekrana Ekle** seçeneğini
-kullanın. Telefon erişimi için güvenlik duvarında 3000 portuna yerel ağ erişimi
-verilmesi gerekebilir.
-
-> PWA'nın service worker ve çevrimdışı özellikleri, `localhost` dışında güvenli
-> bir HTTPS adresi gerektirir. Canlı ortamda 3000 portunu doğrudan açmak yerine
-> uygulamayı HTTPS sağlayan bir alan adı/reverse proxy arkasında yayınlayın.
 
 Terminalden temel sağlık ve analiz kontrolleri (Bash, Git Bash veya WSL):
 
@@ -203,3 +191,65 @@ için şemayı yeniden çalıştırmak yerine migration yaklaşımı kullanın.
 
 Kalıcı finansal kayıtların kaynağı PostgreSQL'dir. Redis yalnızca sıcak snapshot,
 rate limit, kilit ve kısa ömürlü cache için kullanılmalıdır.
+
+
+## Flutter mobil uygulaması
+
+`mobile/` içindeki null-safe Flutter uygulaması Android ve iOS odaklıdır. Koyu temalı ana sayfa analiz, yerel son analiz önbelleği ve yerel takip listesi sunar. Native mobil HTTP istekleri browser CORS politikasına tabi olmadığından backend'e CORS eklenmemiştir.
+
+Önce backend'i depo kökünde başlatın:
+
+```bash
+cp .env.example .env
+docker compose up -d --build --wait
+```
+
+Bağımlılıkları kurup kalite kontrollerini çalıştırın:
+
+```bash
+cd mobile
+flutter pub get
+dart format --set-exit-if-changed .
+flutter analyze
+flutter test
+```
+
+### Android emulator
+
+Android Studio'dan bir emulator başlatın. Varsayılan adres Android emulator host köprüsü olan `http://10.0.2.2:8000` değeridir:
+
+```bash
+cd mobile
+flutter run -d emulator-5554
+flutter build apk --debug
+```
+
+Debug APK `mobile/build/app/outputs/flutter-apk/` altında üretilir ve Git tarafından yok sayılır.
+
+### iOS simulator
+
+macOS ve Xcode gerekir. Varsayılan adres `http://127.0.0.1:8000` değeridir:
+
+```bash
+cd mobile
+open -a Simulator
+flutter run -d ios
+```
+
+### Fiziksel Android veya iPhone
+
+Telefon ve bilgisayar aynı yerel ağda olmalıdır. Bilgisayarın IP adresini macOS/Linux'ta `ipconfig getifaddr en0` veya `hostname -I`, Windows PowerShell'da `Get-NetIPAddress -AddressFamily IPv4` ile bulun. Güvenlik duvarında 8000 portuna yalnızca güvenilen yerel ağdan izin verin ve cihazı şu şekilde çalıştırın:
+
+```bash
+cd mobile
+flutter devices
+flutter run -d <cihaz-kimliği> --dart-define=API_BASE_URL=http://192.168.1.20:8000
+```
+
+`192.168.1.20` yalnızca örnektir; bilgisayarınızın gerçek yerel IP adresiyle değiştirin. Her ortamda adres merkezi olarak `API_BASE_URL` ile değiştirilebilir:
+
+```bash
+flutter run --dart-define=API_BASE_URL=https://analytics.example.com
+```
+
+Android cleartext HTTP yalnızca debug derlemede açıktır. Release derlemesi ve gerçek üretim dağıtımı geçerli sertifikalı **HTTPS** API kullanmalıdır. iPhone üzerinde HTTP geliştirme yerine yerel HTTPS reverse proxy/tünel kullanılması önerilir. Keystore, provisioning profile ve sertifikalar depoya eklenmemelidir.

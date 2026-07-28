@@ -437,3 +437,23 @@ __pycache__/
 .env
 .idea/
 .DS_Store
+
+# Flutter / Dart generated files and signing material
+**/.dart_tool/
+**/.flutter-plugins*
+**/.packages
+**/build/
+**/.pub-cache/
+**/android/.gradle/
+**/android/local.properties
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/ephemeral/
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+*.apk
+*.aab
+*.ipa
+*.jks
+*.keystore
+*.mobileprovision
