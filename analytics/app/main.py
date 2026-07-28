@@ -60,6 +60,17 @@ app = FastAPI(title="Hustle Analytics API", version="1.0.0", lifespan=lifespan)
 ALLOWED_INTERVALS = {"1m", "5m", "15m", "30m", "1h", "4h", "1d"}
 
 
+@app.get("/", include_in_schema=False)
+async def root() -> dict[str, str]:
+    """Provide a useful landing response for browsers and service discovery."""
+    return {
+        "service": "Hustle Analytics API",
+        "status": "running",
+        "documentation": "/docs",
+        "health": "/health",
+    }
+
+
 async def fetch_closed_klines(request: Request, symbol: str, interval: str, limit: int) -> pd.DataFrame:
     if interval not in ALLOWED_INTERVALS:
         raise HTTPException(400, f"Desteklenmeyen interval. İzin verilenler: {sorted(ALLOWED_INTERVALS)}")
