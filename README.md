@@ -53,12 +53,31 @@ açabilirsiniz:
 - Python analiz Swagger: http://localhost:8000/docs
 - Python servis bilgisi: http://localhost:8000/
 
-Terminalden temel sağlık ve analiz kontrolleri:
+Terminalden temel sağlık ve analiz kontrolleri (Bash, Git Bash veya WSL):
 
 ```bash
 curl --fail http://localhost:8080/health
 curl --fail http://localhost:8000/health
 curl --fail "http://localhost:8000/api/v1/analysis/BTCUSDT?interval=1h&limit=200"
+```
+
+Windows PowerShell'da `curl`, `Invoke-WebRequest` için bir diğer addır ve
+`--fail` seçeneğini kabul etmez. PowerShell'dan aynı kontrolleri gerçek curl
+programını açıkça çağırarak yapın:
+
+```powershell
+curl.exe --fail http://localhost:8080/health
+curl.exe --fail http://localhost:8000/health
+curl.exe --fail "http://localhost:8000/api/v1/analysis/BTCUSDT?interval=1h&limit=200"
+```
+
+Alternatif olarak PowerShell'ın kendi komutunu kullanabilirsiniz; başarısız HTTP
+yanıtları hata üretir, başarılı yanıtların gövdesi ekrana yazdırılır:
+
+```powershell
+Invoke-RestMethod http://localhost:8080/health
+Invoke-RestMethod http://localhost:8000/health
+Invoke-RestMethod "http://localhost:8000/api/v1/analysis/BTCUSDT?interval=1h&limit=200"
 ```
 
 `publish` akışının çalışması için gönderilen varlığın `assets` tablosunda kayıtlı
