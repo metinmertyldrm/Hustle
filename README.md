@@ -70,12 +70,22 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
+Python testleri:
+
+```bash
+cd analytics
+pip install -r requirements-dev.txt
+pytest
+```
+
 .NET (SDK 8 gerekir):
 
 ```bash
 dotnet restore Hustle.sln
 dotnet run --project backend/Hustle.Api
 ```
+
+.NET testleri depo kökünden `dotnet test Hustle.sln` komutuyla çalıştırılır.
 
 Veritabanı şeması, PostgreSQL konteyneri ilk kez oluşturulurken
 `database/001_initial_schema.sql` üzerinden otomatik uygulanır. Mevcut volume
