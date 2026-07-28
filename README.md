@@ -27,6 +27,7 @@ Servisler:
 | Servis | Adres |
 | --- | --- |
 | .NET API / Swagger | http://localhost:8080/swagger |
+| Python analiz / karşılama | http://localhost:8000/ |
 | Python analiz / docs | http://localhost:8000/docs |
 | PostgreSQL | localhost:5432 |
 | Redis | localhost:6379 |
@@ -34,6 +35,7 @@ Servisler:
 ## Örnek kullanım
 
 ```bash
+curl "http://localhost:8000/"
 curl "http://localhost:8000/api/v1/analysis/BTCUSDT?interval=1h&limit=200"
 curl -X POST "http://localhost:8000/api/v1/analysis/BTCUSDT/publish?interval=1h&limit=200"
 ```
