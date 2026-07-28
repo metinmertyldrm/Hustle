@@ -32,6 +32,20 @@ Servisler:
 | PostgreSQL | localhost:5432 |
 | Redis | localhost:6379 |
 
+Arka planda başlatıp hemen istek gönderecekseniz Compose'un analiz servisi
+hazır olana kadar beklemesini sağlayın. Yalnızca konteynerin `Started` olması,
+Uvicorn'un henüz HTTP isteği kabul ettiği anlamına gelmez:
+
+```bash
+docker compose up -d --build --wait analytics
+curl "http://localhost:8000/"
+```
+
+`--wait`, imaja tanımlı `/health` kontrolünün başarılı olmasını bekler. Eski bir
+Docker Compose sürümünde `--wait` desteklenmiyorsa `docker compose ps` çıktısında
+`analytics` servisi `healthy` olduktan sonra `curl` komutunu çalıştırın. Başlatma
+sorunlarını incelemek için `docker compose logs analytics` kullanabilirsiniz.
+
 ## Örnek kullanım
 
 ```bash
