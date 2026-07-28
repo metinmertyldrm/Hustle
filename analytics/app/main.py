@@ -5,7 +5,6 @@ from typing import Annotated, Literal
 import httpx
 import numpy as np
 import pandas as pd
-import talib
 from fastapi import FastAPI, HTTPException, Query, Request
 from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -87,12 +86,32 @@ async def fetch_closed_klines(request: Request, symbol: str, interval: str, limi
 
 
 def calculate_signal(frame: pd.DataFrame, symbol: str, interval: str) -> AnalysisResult:
-    close = frame["close"].to_numpy(dtype=np.float64)
-    rsi = talib.RSI(close, timeperiod=14)
-    macd, macd_signal, macd_hist = talib.MACD(close, fastperiod=12, slowperiod=26, signalperiod=9)
-    sma20 = talib.SMA(close, timeperiod=20)
-    sma50 = talib.SMA(close, timeperiod=50)
-    ema20 = talib.EMA(close, timeperiod=20)
+    close_series = frame["close"].astype(np.float64)
+    delta = close_series.diff()
+    average_gain = delta.clip(lower=0).ewm(alpha=1 / 14, adjust=False, min_periods=14).mean()
+    average_loss = -delta.clip(upper=0).ewm(alpha=1 / 14, adjust=False, min_periods=14).mean()
+    relative_strength = average_gain / average_loss.replace(0, np.nan)
+    rsi = 100 - (100 / (1 + relative_strength))
+    rsi = rsi.mask((average_loss == 0) & (average_gain > 0), 100)
+    rsi = rsi.mask((average_loss == 0) & (average_gain == 0), 50)
+
+    ema12 = close_series.ewm(span=12, adjust=False, min_periods=12).mean()
+    ema26 = close_series.ewm(span=26, adjust=False, min_periods=26).mean()
+    macd = ema12 - ema26
+    macd_signal = macd.ewm(span=9, adjust=False, min_periods=9).mean()
+    macd_hist = macd - macd_signal
+    sma20 = close_series.rolling(window=20, min_periods=20).mean()
+    sma50 = close_series.rolling(window=50, min_periods=50).mean()
+    ema20 = close_series.ewm(span=20, adjust=False, min_periods=20).mean()
+
+    close = close_series.to_numpy()
+    rsi = rsi.to_numpy()
+    macd = macd.to_numpy()
+    macd_signal = macd_signal.to_numpy()
+    macd_hist = macd_hist.to_numpy()
+    sma20 = sma20.to_numpy()
+    sma50 = sma50.to_numpy()
+    ema20 = ema20.to_numpy()
 
     score, reasons = 0.0, []
     if rsi[-1] <= 30:
