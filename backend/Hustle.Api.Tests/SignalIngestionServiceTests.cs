@@ -4,6 +4,7 @@ using Hustle.Api.Models;
 using Hustle.Api.Services;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Xunit;
 
 namespace Hustle.Api.Tests;
 

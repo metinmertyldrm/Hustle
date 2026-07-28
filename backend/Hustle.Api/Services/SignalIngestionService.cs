@@ -47,15 +47,22 @@ public sealed class SignalIngestionService(FintechDbContext db) : ISignalIngesti
         db.MarketSignals.Add(signal);
 
         var now = DateTimeOffset.UtcNow;
-        List<AlertRule> rules = action == "HOLD"
-            ? []
-            : await db.AlertRules.Where(rule =>
+        List<AlertRule> rules = [];
+        if (action != "HOLD")
+        {
+            var candidateRules = await db.AlertRules.Where(rule =>
                 rule.AssetId == asset.Id && rule.IsActive && rule.ExpectedAction == action &&
                 rule.MinConfidence <= request.Confidence &&
-                (rule.Timeframe == null || rule.Timeframe == request.Timeframe) &&
-                (rule.ExpiresAt == null || rule.ExpiresAt > now) &&
-                (rule.LastTriggeredAt == null || rule.LastTriggeredAt.Value.AddMinutes(rule.CooldownMinutes) <= now))
+                (rule.Timeframe == null || rule.Timeframe == request.Timeframe))
                 .ToListAsync(cancellationToken);
+
+            rules = candidateRules
+                .Where(rule =>
+                    (rule.ExpiresAt == null || rule.ExpiresAt > now) &&
+                    (rule.LastTriggeredAt == null ||
+                     rule.LastTriggeredAt.Value.AddMinutes(rule.CooldownMinutes) <= now))
+                .ToList();
+        }
 
         foreach (var rule in rules)
         {
