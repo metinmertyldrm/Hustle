@@ -14,37 +14,81 @@ cd Hustle
 code Hustle.code-workspace
 ```
 
-VS Code, önerilen C#, Python ve Docker eklentilerini gösterecektir. En kolay
-çalıştırma yöntemi Docker Compose'tur:
+> **Not:** Deponun tamamını (Python, .NET, SQL ve Docker dosyalarıyla birlikte)
+> incelemek için VS Code önerilir. Visual Studio 2022 kullanıyorsanız
+> `Hustle.sln` dosyasını açabilirsiniz; bu görünüm yalnızca .NET projelerini
+> gösterir.
+
+## Gereksinimler
+
+Projeyi en kısa yoldan çalıştırmak için şunlar yeterlidir:
+
+- Docker Desktop veya Docker Engine ile Docker Compose v2
+- Depoyu incelemek için VS Code ve önerilen eklentiler
+
+Testleri Docker dışında yerel olarak çalıştırmak isterseniz ayrıca Python 3.12+
+ve .NET 8 SDK gerekir. Kurulumları aşağıdaki komutlarla kontrol edebilirsiniz:
+
+```bash
+docker --version
+docker compose version
+python --version
+dotnet --version
+```
+
+## İlk çalıştırma ve elle kontrol
+
+Depo kökünde aşağıdaki komutları çalıştırın:
 
 ```bash
 cp .env.example .env
-docker compose up --build
+docker compose up -d --build --wait
+docker compose ps
 ```
 
-Servisler:
+Tüm servislerin `running`/`healthy` görünmesinden sonra tarayıcıdan şu adresleri
+açabilirsiniz:
 
-| Servis | Adres |
-| --- | --- |
-| .NET API / Swagger | http://localhost:8080/swagger |
-| Python analiz / karşılama | http://localhost:8000/ |
-| Python analiz / docs | http://localhost:8000/docs |
-| PostgreSQL | localhost:5432 |
-| Redis | localhost:6379 |
+- .NET Swagger: http://localhost:8080/swagger
+- Python analiz Swagger: http://localhost:8000/docs
+- Python servis bilgisi: http://localhost:8000/
 
-Arka planda başlatıp hemen istek gönderecekseniz Compose'un analiz servisi
-hazır olana kadar beklemesini sağlayın. Yalnızca konteynerin `Started` olması,
-Uvicorn'un henüz HTTP isteği kabul ettiği anlamına gelmez:
+Terminalden temel sağlık ve analiz kontrolleri:
 
 ```bash
-docker compose up -d --build --wait analytics
-curl "http://localhost:8000/"
+curl --fail http://localhost:8080/health
+curl --fail http://localhost:8000/health
+curl --fail "http://localhost:8000/api/v1/analysis/BTCUSDT?interval=1h&limit=200"
 ```
 
-`--wait`, imaja tanımlı `/health` kontrolünün başarılı olmasını bekler. Eski bir
-Docker Compose sürümünde `--wait` desteklenmiyorsa `docker compose ps` çıktısında
-`analytics` servisi `healthy` olduktan sonra `curl` komutunu çalıştırın. Başlatma
-sorunlarını incelemek için `docker compose logs analytics` kullanabilirsiniz.
+`publish` akışının çalışması için gönderilen varlığın `assets` tablosunda kayıtlı
+olması gerekir. Yeni oluşturulmuş veritabanına örnek BTC varlığını ekleyip uçtan
+uca sinyal akışını şu şekilde deneyebilirsiniz:
+
+```bash
+docker compose exec -T postgres psql -U hustle -d hustle <<'SQL'
+INSERT INTO assets (symbol, name, asset_type, exchange, quote_currency)
+VALUES ('BTCUSDT', 'Bitcoin / Tether', 'crypto', 'BINANCE', 'USDT')
+ON CONFLICT (exchange, symbol) DO NOTHING;
+SQL
+
+curl --fail -X POST \
+  "http://localhost:8000/api/v1/analysis/BTCUSDT/publish?interval=1h&limit=200"
+
+docker compose exec -T postgres psql -U hustle -d hustle \
+  -c "SELECT a.symbol, s.action, s.confidence, s.signal_time FROM market_signals s JOIN assets a ON a.id = s.asset_id ORDER BY s.signal_time DESC LIMIT 5;"
+```
+
+Logları izlemek veya ortamı kapatmak için:
+
+```bash
+docker compose logs -f api analytics
+docker compose down
+```
+
+Veritabanı verilerini de tamamen silerek temiz başlangıç yapmak için
+`docker compose down -v` kullanın. Bu komut yerel PostgreSQL volume'ündeki bütün
+Hustle verilerini siler.
 
 ## Örnek kullanım
 
@@ -70,12 +114,46 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
+Python testleri:
+
+```bash
+cd analytics
+pip install -r requirements-dev.txt
+pytest
+```
+
+Başarılı çalışmada pytest iki testin geçtiğini raporlar. Bu testler nötr piyasa
+sinyalini ve geçersiz zaman aralığının reddedilmesini kontrol eder.
+
 .NET (SDK 8 gerekir):
 
 ```bash
 dotnet restore Hustle.sln
 dotnet run --project backend/Hustle.Api
 ```
+
+.NET testleri depo kökünden çalıştırılır:
+
+```bash
+dotnet test Hustle.sln
+```
+
+Başarılı çalışmada sinyal kaydı, tekrar eden sinyal, alarm eşleşmesi, filtreler,
+cooldown ve geçersiz action senaryolarını kapsayan beş test geçer. Ayrıntılı test
+çıktısı için komuta `--logger "console;verbosity=detailed"` ekleyebilirsiniz.
+
+## Sık karşılaşılan sorunlar
+
+- `docker compose up --wait` desteklenmiyorsa `docker compose up -d --build`
+  çalıştırın ve `docker compose ps` çıktısında servislerin hazır olmasını bekleyin.
+- Analiz isteği Binance bağlantısı nedeniyle `502` dönerse internet/DNS erişimini
+  ve `docker compose logs analytics` çıktısını kontrol edin.
+- `publish` isteği “varlığı kayıtlı değil” döndürürse yukarıdaki örnek `INSERT`
+  komutunu çalıştırın.
+- Port kullanım hatasında 8000, 8080, 5432 ve 6379 portlarını kullanan yerel
+  süreçleri durdurun veya `docker-compose.yml` içindeki host portlarını değiştirin.
+- Windows PowerShell'de `cp .env.example .env` yerine
+  `Copy-Item .env.example .env` kullanabilirsiniz.
 
 Veritabanı şeması, PostgreSQL konteyneri ilk kez oluşturulurken
 `database/001_initial_schema.sql` üzerinden otomatik uygulanır. Mevcut volume
