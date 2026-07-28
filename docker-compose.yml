@@ -45,11 +45,5 @@ services:
       redis: { condition: service_healthy }
       api: { condition: service_started }
 
-  app:
-    build: ./frontend
-    ports: ["3000:80"]
-    depends_on:
-      analytics: { condition: service_started }
-
 volumes:
   postgres-data:

@@ -1,0 +1,3 @@
+// !$*UTF8*$!
+// Flutter iOS project metadata is declared in ../project.yml. Run `xcodegen generate`
+// from ios when regenerating this project, then use Runner.xcworkspace.

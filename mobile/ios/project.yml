@@ -1,0 +1,13 @@
+name: Runner
+options:
+  bundleIdPrefix: com.hustle
+targets:
+  Runner:
+    type: application
+    platform: iOS
+    deploymentTarget: '13.0'
+    sources: [Runner]
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.hustle.mobile
+      INFOPLIST_FILE: Runner/Info.plist
+      SWIFT_OBJC_BRIDGING_HEADER: Runner/Runner-Bridging-Header.h
