@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 COPY Hustle.Api.csproj .
-RUN dotnet restore
+RUN dotnet restore --no-cache
 COPY . .
 RUN dotnet publish -c Release -o /app --no-restore
 
