@@ -49,9 +49,23 @@ docker compose ps
 Tüm servislerin `running`/`healthy` görünmesinden sonra tarayıcıdan şu adresleri
 açabilirsiniz:
 
+- Hustle mobil uygulaması: http://localhost:3000
 - .NET Swagger: http://localhost:8080/swagger
 - Python analiz Swagger: http://localhost:8000/docs
 - Python servis bilgisi: http://localhost:8000/
+
+### Telefonda uygulama olarak kullanma
+
+Hustle arayüzü bir Progressive Web App (PWA) olarak hazırlanmıştır. Bilgisayar
+ve telefon aynı Wi-Fi ağındayken bilgisayarınızın yerel IP adresini öğrenin ve
+telefondan `http://BILGISAYAR-IP:3000` adresini açın. Ardından Android/Chrome'da
+**Uygulamayı yükle**, iPhone/Safari'de **Paylaş → Ana Ekrana Ekle** seçeneğini
+kullanın. Telefon erişimi için güvenlik duvarında 3000 portuna yerel ağ erişimi
+verilmesi gerekebilir.
+
+> PWA'nın service worker ve çevrimdışı özellikleri, `localhost` dışında güvenli
+> bir HTTPS adresi gerektirir. Canlı ortamda 3000 portunu doğrudan açmak yerine
+> uygulamayı HTTPS sağlayan bir alan adı/reverse proxy arkasında yayınlayın.
 
 Terminalden temel sağlık ve analiz kontrolleri (Bash, Git Bash veya WSL):
 

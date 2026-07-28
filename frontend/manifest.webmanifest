@@ -1,0 +1,15 @@
+{
+  "name": "Hustle Piyasa Sinyalleri",
+  "short_name": "Hustle",
+  "description": "Piyasa sinyallerini ve teknik analizleri telefonundan takip et.",
+  "lang": "tr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#07110d",
+  "theme_color": "#08130f",
+  "icons": [
+    { "src": "/icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
