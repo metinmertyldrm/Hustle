@@ -1,0 +1,13 @@
+import { Ionicons } from '@expo/vector-icons';
+import { useState } from 'react';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Card } from '../../src/components/Card';
+import { Screen, SectionHeader } from '../../src/components/Screen';
+import { useWatchlist } from '../../src/features/watchlist/WatchlistContext';
+import { colors } from '../../src/theme/colors';
+export default function WatchlistScreen() {
+  const [input, setInput] = useState(''); const [notice, setNotice] = useState(''); const watchlist = useWatchlist();
+  const add = () => { const added = watchlist.add(input); setNotice(added ? 'Sembol takip listesine eklendi.' : 'Bu sembol zaten listede veya geçersiz.'); if (added) setInput(''); };
+  return <Screen><SectionHeader title="Takip Listesi" subtitle="İlgilendiğiniz varlıkları cihazınızda saklayın." /><View style={styles.addRow}><TextInput accessibilityLabel="Sembol ekle" autoCapitalize="characters" placeholder="Sembol ekle" placeholderTextColor={colors.muted} value={input} onChangeText={setInput} onSubmitEditing={add} style={styles.input} /><Pressable accessibilityLabel="Takibe ekle" onPress={add} style={styles.add}><Ionicons name="add" size={26} color={colors.black} /></Pressable></View>{notice ? <Text style={styles.notice}>{notice}</Text> : null}{watchlist.items.length === 0 ? <Card style={styles.empty}><Ionicons name="star-outline" size={48} color={colors.muted} /><Text style={styles.title}>Takip listeniz boş</Text><Text style={styles.body}>İzlemek istediğiniz sembolleri ekleyin.</Text></Card> : watchlist.items.map((symbol) => <Card key={symbol} style={styles.item}><Ionicons name="star" size={22} color={colors.primary} /><Text style={styles.symbol}>{symbol}</Text><Pressable accessibilityLabel={`${symbol} sembolünü kaldır`} onPress={() => watchlist.remove(symbol)}><Ionicons name="trash-outline" size={22} color={colors.muted} /></Pressable></Card>)}</Screen>;
+}
+const styles = StyleSheet.create({ addRow: { flexDirection: 'row', gap: 9 }, input: { flex: 1, height: 52, paddingHorizontal: 15, color: colors.text, backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, borderRadius: 14 }, add: { width: 52, borderRadius: 14, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center' }, notice: { color: colors.muted, fontSize: 12 }, empty: { alignItems: 'center', paddingVertical: 36, gap: 8 }, title: { color: colors.text, fontSize: 17, fontWeight: '800' }, body: { color: colors.muted }, item: { flexDirection: 'row', alignItems: 'center', gap: 12 }, symbol: { flex: 1, color: colors.text, fontSize: 16, fontWeight: '800' } });
