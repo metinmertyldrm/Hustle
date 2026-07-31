@@ -6,6 +6,7 @@ import httpx
 import numpy as np
 import pandas as pd
 from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from redis.asyncio import Redis
@@ -17,6 +18,11 @@ class Settings(BaseSettings):
     dotnet_signal_url: str = "http://localhost:8080/api/v1/signals"
     redis_url: str = "redis://localhost:6379/0"
     request_timeout_seconds: float = 10.0
+    cors_allowed_origins: str = "http://localhost:8081,http://127.0.0.1:8081"
+
+    @property
+    def parsed_cors_allowed_origins(self) -> list[str]:
+        return [origin.strip() for origin in self.cors_allowed_origins.split(",") if origin.strip()]
 
 
 class IndicatorSnapshot(BaseModel):
@@ -56,6 +62,13 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Hustle Analytics API", version="1.0.0", lifespan=lifespan)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.parsed_cors_allowed_origins,
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Accept", "Content-Type"],
+)
 
 ALLOWED_INTERVALS = {"1m", "5m", "15m", "30m", "1h", "4h", "1d"}
 

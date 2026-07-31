@@ -2,6 +2,12 @@
 
 Flutter uygulamasının koyu temasını ve yeşil Hustle kimliğini koruyan, Expo Router + React Native + strict TypeScript ile hazırlanmış ilk Expo sürümüdür. Uygulama Expo Go ile Android ve iOS'ta çalışacak şekilde yalnızca Expo Go uyumlu paketler kullanır.
 
+Uygulama Expo SDK 54 kullanır. Analizler Binance kripto verisiyle sınırlıdır;
+hisse senetleri (`AAPL`, `MSFT`, `THYAO` gibi) desteklenmez. Piyasalar
+ekranındaki dört kripto kartı statik hızlı erişim listesidir. Sistem WebSocket
+ile canlı yayın yapmaz: kullanıcı istediğinde son 200 mum alınır, kapanmamış mum
+çıkarılır ve son kapanmış mum üzerinden kural tabanlı sinyal hesaplanır.
+
 ## Gereksinimler
 
 - Node.js 20.19 veya daha yeni LTS sürümü
@@ -44,7 +50,7 @@ Flutter uygulamasının koyu temasını ve yeşil Hustle kimliğini koruyan, Exp
 5. Expo geliştirme sunucusunu başlatın:
 
    ```powershell
-   npx expo start
+   npx expo start --offline --clear
    ```
 
 6. iPhone veya Android telefonda Expo Go'yu açın ve terminaldeki QR kodunu tarayın. Bağlantı kurulamazsa Windows Güvenlik Duvarı'nda Node.js için özel ağ erişimine izin verildiğini doğrulayın.
@@ -77,6 +83,9 @@ Uygulama `EXPO_PUBLIC_API_BASE_URL` değerini kullanır ve sondaki `/` karakteri
 | Fiziksel iPhone / Android | `http://<BILGISAYARIN-YEREL-IP-ADRESI>:8000` |
 
 **Önemli:** Fiziksel iPhone'daki `localhost` veya `127.0.0.1`, Windows bilgisayarı değil iPhone'un kendisini gösterir; bu adreslerle bilgisayardaki backend'e bağlanamaz. Bilgisayar ve telefon aynı Wi-Fi ağında olmalı, `.env` içinde bilgisayarın yerel IPv4 adresi kullanılmalı ve 8000 portuna güvenlik duvarı erişimi sağlanmalıdır. `.env` değiştikten sonra Expo'yu `npx expo start --clear` ile yeniden başlatın.
+
+Web için `.env` değerini `http://localhost:8000` yapın. Analytics Docker servisi
+Expo web'in `http://localhost:8081` origin'ine varsayılan olarak izin verir.
 
 Analiz isteği şu sözleşmeyi kullanır:
 
