@@ -4,6 +4,32 @@ Hustle; piyasa verilerinden teknik sinyal üreten Python analiz servisi ile bu
 sinyalleri kullanıcı alarm kurallarıyla eşleştiren ASP.NET Core API'sinin Faz 1
 iskeletidir. Bu depo eğitim ve paper-trading amaçlıdır; yatırım tavsiyesi vermez.
 
+## Veri kapsamı ve analiz yöntemi
+
+Mevcut analiz veri sağlayıcısı Binance'tır ve yalnızca Binance kripto pariteleri
+desteklenir. Hisse senedi desteği yoktur; `AAPL`, `MSFT` ve `THYAO` gibi
+semboller desteklenmez. Expo uygulamasının Piyasalar ekranındaki `BTCUSDT`,
+`ETHUSDT`, `SOLUSDT` ve `BNBUSDT` kartları dinamik bir piyasa taraması değil,
+şimdilik statik bir hızlı erişim listesidir.
+
+Her **Analiz et** isteğinde Binance `/api/v3/klines` endpoint'inden son 200 mum
+alınır. Henüz kapanmamış mum çıkarılır ve hesaplama için en az 60 kapanmış mum
+aranır. Bu akış WebSocket veya gerçek zamanlı streaming değildir; sonuç, istek
+anındaki son kapanmış mum üzerinden üretilir.
+
+Servis RSI 14, MACD 12/26/9, EMA20, SMA20 ve SMA50 hesaplar. Açıklanabilir kural
+skoru şu şekilde oluşturulur:
+
+- RSI ≤ 30 ise `+0.35`, RSI ≥ 70 ise `-0.35`;
+- MACD yukarı kesişiminde `+0.35`, aşağı kesişiminde `-0.35`;
+- fiyat > EMA20 > SMA50 ise `+0.30`;
+- fiyat < EMA20 < SMA50 ise `-0.30`.
+
+Skor ≥ `0.60` olduğunda `SAFE_BUY`, skor ≤ `-0.60` olduğunda `TAKE_PROFIT`,
+diğer durumlarda `HOLD` döner. API'deki `confidence` alanı istatistiksel başarı
+olasılığı veya tahmin doğruluğu değildir; `abs(score)` tabanlı **sinyal gücünü**
+ifade eder.
+
 ## VS Code ile açma
 
 Tek tek dosyaları değil, depo kökünü açın:
@@ -144,7 +170,21 @@ pytest
 ```
 
 Başarılı çalışmada pytest iki testin geçtiğini raporlar. Bu testler nötr piyasa
-sinyalini ve geçersiz zaman aralığının reddedilmesini kontrol eder.
+sinyalini, geçersiz zaman aralığının reddedilmesini ve analytics CORS davranışını
+kontrol eder.
+
+## Expo web CORS yapılandırması
+
+Analytics servisi varsayılan olarak Expo web geliştirme origin'leri
+`http://localhost:8081` ve `http://127.0.0.1:8081` için CORS yanıtı verir.
+İzinli origin'leri virgülle ayrılmış kesin origin listesiyle değiştirebilirsiniz:
+
+```env
+CORS_ALLOWED_ORIGINS=http://localhost:8081,http://127.0.0.1:8081
+```
+
+Tüm origin'lere açık `*` varsayımı kullanılmaz; production origin'lerini açıkça
+listeleyin.
 
 .NET (SDK 8 gerekir):
 
