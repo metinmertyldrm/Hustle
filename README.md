@@ -64,6 +64,32 @@ python --version
 dotnet --version
 ```
 
+## Expo uygulamasını çalıştırma
+
+Expo projesinin `package.json` dosyası depo kökünde değil, `mobile-expo/`
+dizinindedir. Bu nedenle npm ve Expo komutlarını **mutlaka bu dizinde**
+çalıştırın. Windows PowerShell için:
+
+```powershell
+cd C:\projeler\Hustle-main\mobile-expo
+npm install
+Copy-Item .env.example .env
+npm run web
+```
+
+Telefon veya emülatör için web komutu yerine Expo geliştirme sunucusunu açın:
+
+```powershell
+npx expo start --clear
+```
+
+Komut isteminde yol hâlâ `C:\projeler\Hustle-main>` olarak görünüyorsa yanlış
+dizindesiniz; doğru istem `C:\projeler\Hustle-main\mobile-expo>` ile biter.
+`Could not read package.json` veya `ConfigError: ... package.json does not exist`
+hataları npm/Expo'nun depo kökünde çalıştırıldığını gösterir. Ayrıntılı cihaz ve
+API adresi kurulumu için [`mobile-expo/README.md`](mobile-expo/README.md)
+belgesine bakın.
+
 ## İlk çalıştırma ve elle kontrol
 
 Depo kökünde aşağıdaki komutları çalıştırın:

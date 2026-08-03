@@ -17,11 +17,21 @@ ile canlı yayın yapmaz: kullanıcı istediğinde son 200 mum alınır, kapanma
 
 ## Windows PowerShell ile kurulum
 
+> **Dizin kontrolü:** `package.json` yalnızca bu `mobile-expo` dizinindedir.
+> PowerShell istemi komutları çalıştırmadan önce
+> `C:\projeler\Hustle-main\mobile-expo>` ile bitmelidir. Depo kökünde
+> (`C:\projeler\Hustle-main>`) çalıştırılan `npm install`, `npm run web` veya
+> `npx expo start` komutları `ENOENT`/`ConfigError` ile sonuçlanır.
+
 1. Depodan uygulama dizinine geçin:
 
    ```powershell
    cd mobile-expo
+   Test-Path package.json
    ```
+
+   Son komut `True` yazmalıdır. `False` yazarsa `Get-Location` ile mevcut
+   dizini kontrol edip deponun içindeki `mobile-expo` klasörüne geçin.
 
 2. Bağımlılıkları kurun:
 
@@ -51,6 +61,12 @@ ile canlı yayın yapmaz: kullanıcı istediğinde son 200 mum alınır, kapanma
 
    ```powershell
    npx expo start --offline --clear
+   ```
+
+   Yalnızca tarayıcıda çalıştırmak için bunun yerine şu komutu kullanın:
+
+   ```powershell
+   npm run web
    ```
 
 6. iPhone veya Android telefonda Expo Go'yu açın ve terminaldeki QR kodunu tarayın. Bağlantı kurulamazsa Windows Güvenlik Duvarı'nda Node.js için özel ağ erişimine izin verildiğini doğrulayın.
