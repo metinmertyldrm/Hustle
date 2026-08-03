@@ -71,6 +71,31 @@ ile canlı yayın yapmaz: kullanıcı istediğinde son 200 mum alınır, kapanma
 
 6. iPhone veya Android telefonda Expo Go'yu açın ve terminaldeki QR kodunu tarayın. Bağlantı kurulamazsa Windows Güvenlik Duvarı'nda Node.js için özel ağ erişimine izin verildiğini doğrulayın.
 
+### Tünel bağlantısı kurulamazsa
+
+`npx expo start --tunnel` komutundaki `failed to start tunnel` ve
+`remote gone away` mesajları ngrok tünelinin kurulamadığı anlamına gelir; uygulama
+kodunun veya Metro derlemesinin başarısız olduğu anlamına gelmez. Bilgisayar ve
+telefon aynı Wi-Fi ağındaysa tünel kullanmadan depo kökünden şunu çalıştırın:
+
+```powershell
+npm run start:lan -- --clear
+```
+
+Farklı ağlarda tünel zorunluysa [ngrok durum sayfasını](https://status.ngrok.com/)
+kontrol edin, VPN/proxy'yi geçici olarak kapatın ve güvenlik duvarının ngrok'un
+dışarı giden HTTPS bağlantısını engellemediğini doğruladıktan sonra yeniden
+deneyin:
+
+```powershell
+npm run start:tunnel -- --clear
+```
+
+Bu betikler Expo'yu her zaman `mobile-expo` dizininde çalıştırır. Depo kökünde
+`npx expo start --tunnel` kullanılması, kökteki backend `.env` dosyasını yükleyip
+`POSTGRES_*` ve `DOTNET_SIGNAL_URL` değişkenlerini göstermesine yol açar; bu çıktı
+Expo'nun yanlış proje dizininden başlatıldığının işaretidir.
+
 ## Backend'i Docker Compose ile başlatma
 
 Yeni bir PowerShell penceresinde depo köküne geçip servisleri başlatın:
