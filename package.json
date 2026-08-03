@@ -7,6 +7,9 @@
   ],
   "scripts": {
     "start": "cd mobile-expo && npx --no-install expo start",
+    "start:lan": "cd mobile-expo && npx --no-install expo start --lan",
+    "start:tunnel": "cd mobile-expo && npx --no-install expo start --tunnel",
+    "start:localhost": "cd mobile-expo && npx --no-install expo start --localhost",
     "web": "cd mobile-expo && npx --no-install expo start --web",
     "android": "cd mobile-expo && npx --no-install expo start --android",
     "ios": "cd mobile-expo && npx --no-install expo start --ios",

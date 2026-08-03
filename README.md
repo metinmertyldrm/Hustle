@@ -83,6 +83,28 @@ Telefon veya emülatör için kökten `npm start -- --clear` komutunu kullanın:
 npm start -- --clear
 ```
 
+Aynı Wi-Fi ağındaki fiziksel cihaz için ngrok gerektirmeyen LAN modu önerilir:
+
+```powershell
+npm run start:lan -- --clear
+```
+
+Telefon ve bilgisayar farklı ağlardaysa tünel modu kökten şu komutla
+başlatılabilir:
+
+```powershell
+npm run start:tunnel -- --clear
+```
+
+`failed to start tunnel` / `remote gone away` mesajı, Metro veya uygulama
+hatasından ziyade Expo'nun kullandığı ngrok bağlantısının kurulamadığını
+gösterir. Önce ngrok durum sayfasını ve VPN/proxy/kurumsal güvenlik duvarını
+kontrol edin; aynı ağdaysanız tüneli tekrar denemek yerine `start:lan` kullanın.
+Yalnızca bu bilgisayardaki emülatör ya da web için `npm run start:localhost`
+seçeneği de kullanılabilir. Kökten doğrudan `npx expo start --tunnel` çalıştırmak
+yerine yukarıdaki npm betiklerini kullanmak, Expo'nun yanlışlıkla depo kökündeki
+backend `.env` dosyasını yüklemesini de önler.
+
 `npx expo start` Expo CLI'ı geçerli dizinde doğrudan başlattığı için uygulamanın
 kökünü otomatik olarak `mobile-expo/` yapmaz. Bu komutu özellikle kullanmak
 isterseniz önce `cd mobile-expo` çalıştırın veya proje dizinini açıkça verin:
