@@ -17,11 +17,11 @@ ile canlı yayın yapmaz: kullanıcı istediğinde son 200 mum alınır, kapanma
 
 ## Windows PowerShell ile kurulum
 
-> **Dizin kontrolü:** `package.json` yalnızca bu `mobile-expo` dizinindedir.
-> PowerShell istemi komutları çalıştırmadan önce
-> `C:\projeler\Hustle-main\mobile-expo>` ile bitmelidir. Depo kökünde
-> (`C:\projeler\Hustle-main>`) çalıştırılan `npm install`, `npm run web` veya
-> `npx expo start` komutları `ENOENT`/`ConfigError` ile sonuçlanır.
+> **Dizin kontrolü:** Depo kökündeki `package.json`, npm komutlarını bu
+> `mobile-expo` workspace'ine yönlendirir. Dolayısıyla kökten `npm install`,
+> `npm run web` ve `npm start` kullanılabilir. Expo CLI'ı doğrudan çağıran
+> `npx expo start` için ise bu dizine geçin ya da kökten
+> `npx expo start mobile-expo` kullanın.
 
 1. Depodan uygulama dizinine geçin:
 

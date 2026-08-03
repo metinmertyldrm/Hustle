@@ -1,0 +1,20 @@
+{
+  "name": "hustle",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "mobile-expo"
+  ],
+  "scripts": {
+    "start": "cd mobile-expo && npx --no-install expo start",
+    "web": "cd mobile-expo && npx --no-install expo start --web",
+    "android": "cd mobile-expo && npx --no-install expo start --android",
+    "ios": "cd mobile-expo && npx --no-install expo start --ios",
+    "test": "cd mobile-expo && node --experimental-strip-types --test tests/*.test.ts",
+    "typecheck": "cd mobile-expo && npx --no-install tsc --noEmit",
+    "lint": "cd mobile-expo && npx --no-install expo lint"
+  },
+  "engines": {
+    "node": ">=20.19"
+  }
+}

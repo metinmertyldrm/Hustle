@@ -66,29 +66,33 @@ dotnet --version
 
 ## Expo uygulamasını çalıştırma
 
-Expo projesinin `package.json` dosyası depo kökünde değil, `mobile-expo/`
-dizinindedir. Bu nedenle npm ve Expo komutlarını **mutlaka bu dizinde**
-çalıştırın. Windows PowerShell için:
+Depo kökündeki npm workspace yapılandırması komutları `mobile-expo/`
+uygulamasına yönlendirir. Bu nedenle Windows PowerShell'da kullanıcının hata
+aldığı depo kökünden doğrudan şu komutlar çalıştırılabilir:
 
 ```powershell
-cd C:\projeler\Hustle-main\mobile-expo
+cd C:\projeler\Hustle-main
 npm install
-Copy-Item .env.example .env
+Copy-Item mobile-expo\.env.example mobile-expo\.env
 npm run web
 ```
 
-Telefon veya emülatör için web komutu yerine Expo geliştirme sunucusunu açın:
+Telefon veya emülatör için kökten `npm start -- --clear` komutunu kullanın:
 
 ```powershell
-npx expo start --clear
+npm start -- --clear
 ```
 
-Komut isteminde yol hâlâ `C:\projeler\Hustle-main>` olarak görünüyorsa yanlış
-dizindesiniz; doğru istem `C:\projeler\Hustle-main\mobile-expo>` ile biter.
-`Could not read package.json` veya `ConfigError: ... package.json does not exist`
-hataları npm/Expo'nun depo kökünde çalıştırıldığını gösterir. Ayrıntılı cihaz ve
-API adresi kurulumu için [`mobile-expo/README.md`](mobile-expo/README.md)
-belgesine bakın.
+`npx expo start` Expo CLI'ı geçerli dizinde doğrudan başlattığı için uygulamanın
+kökünü otomatik olarak `mobile-expo/` yapmaz. Bu komutu özellikle kullanmak
+isterseniz önce `cd mobile-expo` çalıştırın veya proje dizinini açıkça verin:
+
+```powershell
+npx expo start mobile-expo --clear
+```
+
+Ayrıntılı cihaz ve API adresi kurulumu için
+[`mobile-expo/README.md`](mobile-expo/README.md) belgesine bakın.
 
 ## İlk çalıştırma ve elle kontrol
 
